@@ -6,7 +6,13 @@ export default {
 
      methods: {
         addToCart(product) {
-            console.log("Add product to cart");
+            product.isCart = true;
+
+            let cartItems = JSON.parse(localStorage.getItem("cartItems")) || [];
+            cartItems.push(product);
+           localStorage.setItem('cartItems', JSON.stringify(cartItems));
+
+            this.$emit('add-to-cart');
         },
 
         showCart() {

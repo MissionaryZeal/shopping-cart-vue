@@ -5,7 +5,7 @@ import Cart from "./components/Cart.vue";
 export default {
   data() {
     return {
-      pageView: 'products',
+      pageView: "products",
       products: [
         {
           id: 1,
@@ -29,7 +29,7 @@ export default {
           image: "/product-images/apple-watch-3.jpg",
           rating: 4.7,
           price: 399,
-          isCart: true,
+          isCart: false,
         },
         {
           id: 4,
@@ -53,64 +53,58 @@ export default {
           image: "/product-images/apple-watch-6.jpg",
           rating: 4.4,
           price: 199,
-          isCart: true,
+          isCart: false,
         },
       ],
-
-      carts: [
-         {
-          id: 1,
-          name: "Apple Watch Series 7 GPS, Aluminium Case, Starlight Sport",
-          image: "/product-images/apple-watch-1.jpg",
-          rating: 5.0,
-          price: 599,
-          isCart: false,
-        },
-        {
-          id: 2,
-          name: "Apple Watch Series 6 GPS, Aluminium Case, Red Sport",
-          image: "/product-images/apple-watch-2.jpg",
-          rating: 4.8,
-          price: 499,
-          isCart: false,
-        },
-      ]
+      carts: JSON.parse(localStorage.getItem("cartItems")) || [],
     };
   },
 
   components: {
     Products,
-    Cart
+    Cart,
   },
 
-methods: {
-  changePageView() {
-    this.pageView = 'cart';
+  created() {
+    this.products.forEach((product) => {
+      if (this.carts.some((cartItem) => cartItem.id === product.id)) {
+        product.isCart = true;
+      }
+    });
   },
-}
 
+  methods: {
+    changePageView() {
+      this.pageView = "cart";
+    },
+    handleProductAdded() {
+      this.carts = JSON.parse(localStorage.getItem("cartItems")) || [];
+    },
+  },
 };
-
 </script>
 
 <template>
-  <div class="container mx-auto mt-6"  v-if="pageView === 'products'">
+  <div class="container mx-auto mt-6" v-if="pageView === 'products'">
     <h1 className="text-3xl font-bold underline text-center my-3">Watch Store</h1>
     <div class="flex justify-between flex-wrap">
-      <template  v-for="(product, index) in products">
-      <Products :product="product" @show-cart="changePageView"/>
+      <template v-for="(product, index) in products">
+        <Products :product="product" @show-cart="changePageView" @add-to-cart="handleProductAdded" />
       </template>
     </div>
   </div>
 
-     <div class="container mx-auto mt-6"  v-else-if="pageView === 'cart'">
-     <div class="flex justify-between items-center">
-        <h1 className="text-3xl font-bold underline text-center my-3"></h1>
-        <h1 className="text-3xl font-bold underline text-center my-3">Cart</h1>
-        <button class="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded text-sm px-3 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" @click="pageView = 'products'">Back</button>
-     </div>
-    <Cart :carts="carts" @go-to-product="pageView = 'products'"/>
-    
+  <div class="container mx-auto mt-6" v-else-if="pageView === 'cart'">
+    <div class="flex justify-between items-center">
+      <h1 className="text-3xl font-bold underline text-center my-3"></h1>
+      <h1 className="text-3xl font-bold underline text-center my-3">Cart</h1>
+      <button
+        class="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded text-sm px-3 py-1 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        @click="pageView = 'products'"
+      >
+        Back
+      </button>
+    </div>
+    <Cart :carts="carts" @go-to-product="pageView = 'products'" />
   </div>
-
 </template>
