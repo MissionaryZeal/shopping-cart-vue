@@ -13,6 +13,7 @@ export default {
           image: "/product-images/apple-watch-1.jpg",
           rating: 5.0,
           price: 599,
+          qty: 1,
           isCart: false,
         },
         {
@@ -21,6 +22,7 @@ export default {
           image: "/product-images/apple-watch-2.jpg",
           rating: 4.8,
           price: 499,
+          qty: 1,
           isCart: false,
         },
         {
@@ -29,6 +31,7 @@ export default {
           image: "/product-images/apple-watch-3.jpg",
           rating: 4.7,
           price: 399,
+          qty: 1,
           isCart: false,
         },
         {
@@ -37,6 +40,7 @@ export default {
           image: "/product-images/apple-watch-4.jpg",
           rating: 4.6,
           price: 349,
+          qty: 1,
           isCart: false,
         },
         {
@@ -45,6 +49,7 @@ export default {
           image: "/product-images/apple-watch-5.jpg",
           rating: 4.5,
           price: 299,
+          qty: 1,
           isCart: false,
         },
         {
@@ -53,6 +58,7 @@ export default {
           image: "/product-images/apple-watch-6.jpg",
           rating: 4.4,
           price: 199,
+          qty: 1,
           isCart: false,
         },
       ],
@@ -66,21 +72,24 @@ export default {
   },
 
   created() {
-    this.products.forEach((product) => {
-      if (this.carts.some((cartItem) => cartItem.id === product.id)) {
-        product.isCart = true;
-      }
-    });
+   this.updateProducts();
   },
 
   methods: {
     changePageView() {
       this.pageView = "cart";
     },
-    handleProductAdded() {
+    handleProductAddedOrUpdated() {
       this.carts = JSON.parse(localStorage.getItem("cartItems")) || [];
+      this.updateProducts();
     },
+    updateProducts() {
+       this.products.forEach((product) => {
+        product.isCart = this.carts.some((cartItem) => cartItem.id === product.id);
+      });
+    }
   },
+
 };
 </script>
 
@@ -89,7 +98,7 @@ export default {
     <h1 className="text-3xl font-bold underline text-center my-3">Watch Store</h1>
     <div class="flex justify-between flex-wrap">
       <template v-for="(product, index) in products">
-        <Products :product="product" @show-cart="changePageView" @add-to-cart="handleProductAdded" />
+        <Products :product="product" @show-cart="changePageView" @add-to-cart="handleProductAddedOrUpdated" />
       </template>
     </div>
   </div>
@@ -105,6 +114,6 @@ export default {
         Back
       </button>
     </div>
-    <Cart :carts="carts" @go-to-product="pageView = 'products'" />
+    <Cart :carts="carts" @go-to-product="pageView = 'products'" @update-to-cart="handleProductAddedOrUpdated" />
   </div>
 </template>
